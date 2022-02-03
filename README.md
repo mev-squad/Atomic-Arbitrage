@@ -1,6 +1,6 @@
 # Atomic Arbitrage
 
-Atomic Arbitrage is a base example of a bare implementation of an arbitrage bot. Written in Go but not directly implemented into Geth yet because its based off an old example bot. Starting with UNI V2 arbs before moving onto UNI v3, Balancer, and Curve arbitrage.
+Atomic Arbitrage is a base example of a bare implementation of an arbitrage bot. Written in Go based off an old example bot. Starting with UNI V2 arbs before moving onto UNI v3, Balancer, and Curve arbitrage.
 
 ## Contributing?
 
