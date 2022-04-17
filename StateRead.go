@@ -7,8 +7,8 @@ import (
 	jsonrpc "github.com/ybbus/jsonrpc/v2"
 )
 
-func DownloadBlock(blockNumber string) ([]interface{}, string) {
-	rpcClient := jsonrpc.NewClient("")
+func DownloadBlock(blockNumber string, nodeURL string) ([]interface{}, string) {
+	rpcClient := jsonrpc.NewClient(nodeURL)
 
 	result, err := rpcClient.Call("eth_getBlockByNumber", blockNumber, true)
 
@@ -43,8 +43,8 @@ func deriveReservesFromSlot(slot string) (uint256.Int, uint256.Int) {
 	return *reserve0, *reserve1
 }
 
-func GetReserves(pair string) (uint256.Int, uint256.Int) {
-	rpcClient := jsonrpc.NewClient("")
+func GetReserves(pair string, nodeURL string) (uint256.Int, uint256.Int) {
+	rpcClient := jsonrpc.NewClient(nodeURL)
 
 	response, _ := rpcClient.Call("eth_getStorageAt", pair, "0x8", "latest")
 

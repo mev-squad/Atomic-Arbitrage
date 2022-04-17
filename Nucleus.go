@@ -11,14 +11,32 @@ import (
 	"github.com/holiman/uint256"
 )
 
+type Config struct {
+	NodeURL     string
+}
+
+var nodeURL string
 var QuickToSushi map[string]string
 
 func main() {
+	// read config
+	fmt.Println("reading config...")
+	file, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		panic(err)
+	}
+	var config Config
+	json.Unmarshal(file, &config)
+	if err != nil {
+		panic(err)
+	}
+	nodeURL = config.NodeURL
+
 	// This is the so-called "Nucleus" of Atomic Arbitrage
 	// Arbitrage broken down to it's core elements
 	QuickToSushi = readQuickTokenPairs()
 	for {
-		currentBlock, blockNumber := DownloadBlock("latest")
+		currentBlock, blockNumber := DownloadBlock("latest", nodeURL)
 		fmt.Println(blockNumber)
 		DetectedOpportunities := SearchBlock(currentBlock)
 		fmt.Println(DetectedOpportunities)
@@ -104,8 +122,8 @@ func findSwapExactTokensForTokens(inputData string, pathLength uint64) []Arbitra
 		poolAddress := CalculatePairAddress(token0, token1)
 		sushiAddress := QuickToSushi[poolAddress]
 		if sushiAddress != "" {
-			pool0Reseve0, pool0Reseve1 := GetReserves(poolAddress)
-			pool1Reseve0, pool1Reseve1 := GetReserves(sushiAddress)
+			pool0Reseve0, pool0Reseve1 := GetReserves(poolAddress, nodeURL)
+			pool1Reseve0, pool1Reseve1 := GetReserves(sushiAddress, nodeURL)
 			aToB, result := ComputeProfitMaximizingTrade(pool0Reseve0, pool0Reseve1, pool1Reseve0, pool1Reseve1)
 			ArbitrageOpportunities = append(ArbitrageOpportunities, ArbitrageOpportunity{result, poolAddress, aToB})
 		}
