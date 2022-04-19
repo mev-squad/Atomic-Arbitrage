@@ -239,8 +239,13 @@ func SearchBlock(block []interface{}) []ArbitrageOpportunity {
 	// need to parallelize that 20% of transactions
 	for index := 0; index < len(block); index++ {
 		tx := block[index].(map[string]interface{})
+		to := tx["to"]
+		// handle contract creations
+		if to == nil {
+			continue
+		}
 		// Checks for calls to the Quickswap Router
-		if tx["to"].(string) == "0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff" {
+		if to.(string) == "0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff" {
 			senderData := tx["input"]
 			pathLength := ParsePathLength(senderData.(string))
 			// Cap of 30 is set to stop arbitraging of arbitrage
