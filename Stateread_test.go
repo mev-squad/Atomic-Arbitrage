@@ -9,6 +9,13 @@ import (
 )
 
 func TestGetReserves(t *testing.T) {
+	// read config
+	config, err := readConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	var testCases []string = []string{
 		"0xE62Ec2e799305E0D367b0Cc3ee2CdA135bF89816",
 		"0x1E67124681b402064CD0ABE8ed1B5c79D2e02f64",
@@ -35,7 +42,7 @@ func TestGetReserves(t *testing.T) {
 
 	for index := 0; index < len(testCases)-1; index++ {
 		go func() {
-			reserve0, reserve1 := GetReserves(testCases[index])
+			reserve0, reserve1 := GetReserves(testCases[index], config.HttpURL)
 			pipe <- [2]uint256.Int{reserve0, reserve1}
 		}()
 	}
@@ -48,9 +55,16 @@ func TestGetReserves(t *testing.T) {
 }
 
 func TestDownloadBlock(t *testing.T) {
+	// read config
+	config, err := readConfig()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	start := time.Now()
 
-	DownloadBlock("latest")
+	DownloadBlock("latest", config.HttpURL)
 
 	elapsed := time.Since(start)
 

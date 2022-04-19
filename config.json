@@ -1,3 +1,4 @@
 {
-  "nodeUrl": "https://polygon-rpc.com"
+  "httpUrl": "",
+  "webSocketUrl": ""
 }
