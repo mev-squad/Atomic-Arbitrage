@@ -1,6 +1,7 @@
-package main
+package nucleus
 
 import (
+	"Nucleus/stateRead"
 	"fmt"
 	"testing"
 	"time"
@@ -17,7 +18,7 @@ func TestEndToEnd(t *testing.T) {
 	}
 
 	start := time.Now()
-	currentBlock, _ := DownloadBlock("0x156A401", config.HttpURL)
+	currentBlock, _ := stateRead.DownloadBlock("0x156A401", config.HttpURL)
 	DetectedOpportunities = SearchBlock(currentBlock)
 	elapsed := time.Since(start)
 	fmt.Println(elapsed)
@@ -31,6 +32,6 @@ func BenchmarkEndtoEnd(b *testing.B) {
 		return
 	}
 
-	currentBlock, _ := DownloadBlock("0x156A401", config.HttpURL)
+	currentBlock, _ := stateRead.DownloadBlock("0x156A401", config.HttpURL)
 	DetectedOpportunities = SearchBlock(currentBlock)
 }

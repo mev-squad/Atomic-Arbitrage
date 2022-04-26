@@ -1,7 +1,9 @@
-package main
+package stateRead
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -69,4 +71,22 @@ func TestDownloadBlock(t *testing.T) {
 	elapsed := time.Since(start)
 
 	fmt.Println(elapsed)
+}
+
+func readConfig() (Config, error) {
+	file, err := ioutil.ReadFile("config.json")
+	if err != nil {
+		return Config{}, err
+	}
+	var config Config
+	json.Unmarshal(file, &config)
+	if err != nil {
+		return Config{}, err
+	}
+	return config, nil
+}
+
+type Config struct {
+	HttpURL      string
+	WebSocketURL string
 }
