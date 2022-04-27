@@ -1,21 +1,18 @@
 package stateRead
 
 import (
+	"Nucleus/rpcClient"
 	"fmt"
 
 	"github.com/holiman/uint256"
-	jsonrpc "github.com/ybbus/jsonrpc/v2"
 )
 
-func DownloadBlock(blockNumber string, nodeURL string) ([]interface{}, string) {
-	rpcClient := jsonrpc.NewClient(nodeURL)
+func DownloadBlock(blockNumber string) ([]interface{}, string) {
 
-	result, err := rpcClient.Call("eth_getBlockByNumber", blockNumber, true)
-
+	result, err := rpcClient.HTTPClient.Call("eth_getBlockByNumber", blockNumber, true)
 	if err != nil {
 		fmt.Println(err)
 	}
-
 	returnedBlock := result.Result.(map[string]interface{})["number"].(string)
 
 	txArray := result.Result.(map[string]interface{})["transactions"].([]interface{})
@@ -43,10 +40,12 @@ func deriveReservesFromSlot(slot string) (uint256.Int, uint256.Int) {
 	return *reserve0, *reserve1
 }
 
-func GetReserves(pair string, nodeURL string) (uint256.Int, uint256.Int) {
-	rpcClient := jsonrpc.NewClient(nodeURL)
+func GetReserves(pair string) (uint256.Int, uint256.Int) {
+	response, err := rpcClient.HTTPClient.Call("eth_getStorageAt", pair, "0x8", "latest")
 
-	response, _ := rpcClient.Call("eth_getStorageAt", pair, "0x8", "latest")
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	reserve0, reserve1 := deriveReservesFromSlot(response.Result.(string))
 	return reserve0, reserve1

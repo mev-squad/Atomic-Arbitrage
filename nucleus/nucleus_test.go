@@ -1,6 +1,7 @@
 package nucleus
 
 import (
+	"Nucleus/rpcClient"
 	"Nucleus/stateRead"
 	"fmt"
 	"testing"
@@ -10,28 +11,20 @@ import (
 var DetectedOpportunities []ArbitrageOpportunity
 
 func TestEndToEnd(t *testing.T) {
-	// read config
-	config, err := readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// initialize rpcClient
+	rpcClient.Initialize("../rpcClient/config.json")
 
 	start := time.Now()
-	currentBlock, _ := stateRead.DownloadBlock("0x156A401", config.HttpURL)
+	currentBlock, _ := stateRead.DownloadBlock("latest")
 	DetectedOpportunities = SearchBlock(currentBlock)
 	elapsed := time.Since(start)
 	fmt.Println(elapsed)
 }
 
 func BenchmarkEndtoEnd(b *testing.B) {
-	// read config
-	config, err := readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// initialize rpcClient
+	rpcClient.Initialize("../rpcClient/config.json")
 
-	currentBlock, _ := stateRead.DownloadBlock("0x156A401", config.HttpURL)
+	currentBlock, _ := stateRead.DownloadBlock("latest")
 	DetectedOpportunities = SearchBlock(currentBlock)
 }

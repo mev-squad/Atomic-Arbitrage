@@ -2,10 +2,10 @@ package nucleus
 
 import (
 	"Nucleus/math"
+	"Nucleus/rpcClient"
 	"Nucleus/stateRead"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -20,7 +20,6 @@ import (
 	"github.com/holiman/uint256"
 )
 
-var config Config
 var QuickToSushi map[string]string
 
 const ABIS_DIR = "abis"
@@ -36,20 +35,6 @@ type ArbitrageOpportunity struct {
 	AmountIn    *uint256.Int // [3]uint64
 	poolAddress string
 	AtoB        bool
-}
-
-// read config.json
-func readConfig() (Config, error) {
-	file, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		return Config{}, err
-	}
-	var config Config
-	json.Unmarshal(file, &config)
-	if err != nil {
-		return Config{}, err
-	}
-	return config, nil
 }
 
 // read ABIs from abis folder
@@ -108,14 +93,8 @@ func LoadQuickToSushi() (map[string]string, error) {
 		return nil, err
 	}
 
-	// connect to node
-	client, err := ethclient.Dial(config.WebSocketURL)
-	if err != nil {
-		return nil, err
-	}
-
 	// get block number
-	blockNumber, err := client.BlockNumber(context.Background())
+	blockNumber, err := rpcClient.WSClient.BlockNumber(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +122,7 @@ func LoadQuickToSushi() (map[string]string, error) {
 			query.FromBlock = new(big.Int).SetUint64(i)
 			query.ToBlock = new(big.Int).SetUint64(i + batchSize - 1)
 
-			logs, err := client.FilterLogs(context.Background(), query)
+			logs, err := rpcClient.WSClient.FilterLogs(context.Background(), query)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -266,8 +245,8 @@ func findSwapExactTokensForTokens(inputData string, pathLength uint64) []Arbitra
 		poolAddress := CalculatePairAddress(token0, token1)
 		sushiAddress := QuickToSushi[poolAddress]
 		if sushiAddress != "" {
-			pool0Reseve0, pool0Reseve1 := stateRead.GetReserves(poolAddress, config.HttpURL)
-			pool1Reseve0, pool1Reseve1 := stateRead.GetReserves(sushiAddress, config.HttpURL)
+			pool0Reseve0, pool0Reseve1 := stateRead.GetReserves(poolAddress)
+			pool1Reseve0, pool1Reseve1 := stateRead.GetReserves(sushiAddress)
 			aToB, result := math.ComputeProfitMaximizingTrade(pool0Reseve0, pool0Reseve1, pool1Reseve0, pool1Reseve1)
 			ArbitrageOpportunities = append(ArbitrageOpportunities, ArbitrageOpportunity{result, poolAddress, aToB})
 		}

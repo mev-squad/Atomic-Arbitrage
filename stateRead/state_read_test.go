@@ -1,9 +1,8 @@
 package stateRead
 
 import (
-	"encoding/json"
+	"Nucleus/rpcClient"
 	"fmt"
-	"io/ioutil"
 	"testing"
 	"time"
 
@@ -11,12 +10,8 @@ import (
 )
 
 func TestGetReserves(t *testing.T) {
-	// read config
-	config, err := readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// initialize rpcClient
+	rpcClient.Initialize("../rpcClient/config.json")
 
 	var testCases []string = []string{
 		"0xE62Ec2e799305E0D367b0Cc3ee2CdA135bF89816",
@@ -43,50 +38,28 @@ func TestGetReserves(t *testing.T) {
 	start := time.Now()
 
 	for index := 0; index < len(testCases)-1; index++ {
+		i := index
 		go func() {
-			reserve0, reserve1 := GetReserves(testCases[index], config.HttpURL)
+			reserve0, reserve1 := GetReserves(testCases[i])
 			pipe <- [2]uint256.Int{reserve0, reserve1}
 		}()
 	}
+
 	// Wait for routines to finish
 	for index := 0; index < len(testCases)-1; index++ {
 		<-pipe
 	}
+
 	elapsed := time.Since(start)
 	fmt.Println(elapsed / 18)
 }
 
 func TestDownloadBlock(t *testing.T) {
-	// read config
-	config, err := readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// initialize rpcClient
+	rpcClient.Initialize("../rpcClient/config.json")
 
 	start := time.Now()
-
-	DownloadBlock("latest", config.HttpURL)
-
+	DownloadBlock("latest")
 	elapsed := time.Since(start)
-
 	fmt.Println(elapsed)
-}
-
-func readConfig() (Config, error) {
-	file, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		return Config{}, err
-	}
-	var config Config
-	json.Unmarshal(file, &config)
-	if err != nil {
-		return Config{}, err
-	}
-	return config, nil
-}
-
-type Config struct {
-	HttpURL      string
-	WebSocketURL string
 }

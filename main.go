@@ -2,22 +2,15 @@ package main
 
 import (
 	"Nucleus/nucleus"
+	"Nucleus/rpcClient"
 	"Nucleus/stateRead"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"time"
 )
 
 func main() {
-	var err error
-
-	// read config
-	config, err := readConfig()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	//Initialize the rpcClient
+	rpcClient.Initialize("./rpcClient/config.json")
 
 	//sync pairs
 	fmt.Println("loading pairs...")
@@ -34,27 +27,9 @@ func main() {
 
 	//search for arb opportunities
 	for {
-		currentBlock, blockNumber := stateRead.DownloadBlock("latest", config.HttpURL)
+		currentBlock, blockNumber := stateRead.DownloadBlock("latest")
 		fmt.Println(blockNumber)
 		DetectedOpportunities := nucleus.SearchBlock(currentBlock)
 		fmt.Println(DetectedOpportunities)
 	}
-}
-
-func readConfig() (Config, error) {
-	file, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		return Config{}, err
-	}
-	var config Config
-	json.Unmarshal(file, &config)
-	if err != nil {
-		return Config{}, err
-	}
-	return config, nil
-}
-
-type Config struct {
-	HttpURL      string
-	WebSocketURL string
 }
