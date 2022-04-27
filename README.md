@@ -17,7 +17,7 @@ Just tackle a To-Do task and submit a PR, ideally once done I can make some Gith
 - [ ] - Better transaction signing and construction (ie call uniswap call() first then direct it to the arb contract rather than having a contract call it first)
 - [ ] - e2e tests and timing
 - [ ] - Detect more swaps than just swapExactTokensForTokens (or just use a better method to detect arb opportunities, and dive into the mempool)
-- [ ] - Organize Code from flat repo, and fix a lot of code-style issues
+- [x] - Organize Code from flat repo, and fix a lot of code-style issues (credit @0xKitsune)
 - [ ] - Goroutine stuff
 - [ ] - Remove interfaces in favor of generics where possible? (I think Generics are faster?)
 - [ ] - Transactions is also mostly unfinished and un optimized in any way
