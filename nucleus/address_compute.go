@@ -1,6 +1,7 @@
-package main
+package nucleus
 
 import (
+	"Nucleus/stateRead"
 	"encoding/hex"
 	"strings"
 
@@ -10,8 +11,8 @@ import (
 
 func SortTokens(token0 string, token1 string) (string, string) {
 	// Returns the tokens sorted, but with less safety checks than the sol version
-	token0Number, _ := uint256.FromHex("0x" + RemoveLeadingZeros(token0[2:])) // Sanitation so it doesn't break on 0x00 addresses
-	token1Number, _ := uint256.FromHex("0x" + RemoveLeadingZeros(token0[2:]))
+	token0Number, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(token0[2:])) // Sanitation so it doesn't break on 0x00 addresses
+	token1Number, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(token0[2:]))
 	if token0Number.Lt(token1Number) {
 		return token0, token1
 	} else {
@@ -55,7 +56,7 @@ func CalculatePairAddress(tokenA string, tokenB string) string {
 
 	// Uint Conversion
 
-	tempUint, _ := uint256.FromHex("0x" + RemoveLeadingZeros(hex.EncodeToString(buf2)))
+	tempUint, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(hex.EncodeToString(buf2)))
 
 	addressBytes := tempUint.Bytes20()
 
