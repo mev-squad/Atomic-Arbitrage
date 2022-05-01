@@ -12,7 +12,7 @@ import (
 func SortTokens(token0 string, token1 string) (string, string) {
 	// Returns the tokens sorted, but with less safety checks than the sol version
 	token0Number, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(token0[2:])) // Sanitation so it doesn't break on 0x00 addresses
-	token1Number, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(token0[2:]))
+	token1Number, _ := uint256.FromHex("0x" + stateRead.RemoveLeadingZeros(token1[2:]))
 	if token0Number.Lt(token1Number) {
 		return token0, token1
 	} else {
